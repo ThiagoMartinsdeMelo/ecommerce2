@@ -21,6 +21,8 @@
 + Boleto Direto;
 + Mercado Pago;
 
+### Script para database ![DUMP](https://github.com/ThiagoMartinsdeMelo/ecommerce2/blob/master/new_storage.sql)
+
 
 
 
