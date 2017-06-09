@@ -15,6 +15,12 @@
 + Staring dos Produtos;
 + Integração ao Mailchimp;
 + Página Estática;
++ Integração à meios de pagamento:
++ Pagseguro;
++ Paypal;
++ Boleto Direto;
++ Mercado Pago;
+
 
 
 
