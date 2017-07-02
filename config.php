@@ -7,18 +7,22 @@ global $db;
 $config = array();
 
 if (ENVIRONMENT == 'development') {
-	define("BASE_URL", "http://localhost:60/ecommerce2/");
+	define("BASE_URL", "http://localhost/ecommerce2/");
 	$config['dbname'] = 'nova_loja';
 	$config['host'] = 'localhost';
 	$config['dbuser'] = 'root';
 	$config['dbpass'] = '';
 } else {
-	define("BASE_URL", "http://localhost:60/ecommerce2/");
+	define("BASE_URL", "http://localhost/ecommerce2/");
 	$config['dbname'] = 'nova_loja';
 	$config['host'] = 'localhost';
 	$config['dbuser'] = 'root';
 	$config['dbpass'] = '';
 }
+
+/* Define a linguagem padrão */
+
+$config['default_lang'] = 'pt-br';
 
 $db = new PDO("mysql:dbname=".$config['dbname'].";host=".$config['host'], $config['dbuser'], $config['dbpass']);
 

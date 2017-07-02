@@ -1,4 +1,5 @@
 <?php
+
 class homeController extends controller {
 
 	private $user;
