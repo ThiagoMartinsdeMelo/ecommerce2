@@ -1,6 +1,6 @@
 <?php
 
-class langController extends controller {
+class langController extends Controller {
 
 	private $user;
 

@@ -1,9 +1,9 @@
 <?php
 
-class Products extends model
+class Products extends Model
 {
 
-	public function getList()
+	public function getList($offset = 0, $limit = 3)
 	{
 		$array = array();
 		//$sql = "SELECT * FROM products";
@@ -11,7 +11,7 @@ class Products extends model
 		$sql = "SELECT * ,
 				(select brands.name from brands where brands.id = products.id_brand) as brand_name,
 				(select categories.name from categories where categories.id  = products.id_category) as category_name
-				FROM products";
+				FROM products LIMIT $offset, $limit";
 
 		$sql = $this->db->query($sql);
 
@@ -48,6 +48,15 @@ class Products extends model
 
 		return $array;
 
+	}
+
+	public function getTotal()
+	{
+		$sql = "SELECT COUNT(*) as c FROM products";
+		$sql = $this->db->query($sql);
+		$sql = $sql->fetch();
+
+		return $sql['c'];
 	}
 
 }

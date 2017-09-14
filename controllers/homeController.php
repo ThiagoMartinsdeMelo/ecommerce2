@@ -1,6 +1,6 @@
 <?php
 
-class homeController extends controller
+class homeController extends Controller
 {
 
 	private $user;
@@ -16,7 +16,20 @@ class homeController extends controller
 
         $products = new Products();
 
-        $dados['list'] = $products->getList();
+        $currentPage = 1;
+        $offset = 0;
+        $limit = 3;
+
+        if (!empty($_GET['p']) and is_numeric($_GET['p'])) {
+            $currentPage = $_GET['p'];
+        }
+
+        $offset = ($currentPage * $limit) - $limit;
+
+        $dados['list'] = $products->getList($offset, $limit);
+        $dados['totalItems'] = $products->getTotal();
+        $dados['numberOfPages'] = ceil($dados['totalItems']/$limit); // ceil arredonda pra cima
+        $dados['currentPage'] = $currentPage;
 
         $this->loadTemplate('home', $dados);
     }
