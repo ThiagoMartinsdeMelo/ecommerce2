@@ -381,3 +381,7 @@ footer h3 {
 	color: #000;
 	text-decoration: none;
 }
+
+.dropdown-menu {
+	width: 100%;
+}

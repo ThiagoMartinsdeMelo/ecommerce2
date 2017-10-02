@@ -15,6 +15,7 @@ class homeController extends Controller
         $dados = array();
 
         $products = new Products();
+        $categories = new Categories();
 
         $currentPage = 1;
         $offset = 0;
@@ -30,6 +31,8 @@ class homeController extends Controller
         $dados['totalItems'] = $products->getTotal();
         $dados['numberOfPages'] = ceil($dados['totalItems']/$limit); // ceil arredonda pra cima
         $dados['currentPage'] = $currentPage;
+
+        $dados['categories'] = $categories->getList();
 
         $this->loadTemplate('home', $dados);
     }
