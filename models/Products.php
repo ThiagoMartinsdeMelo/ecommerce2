@@ -3,17 +3,32 @@
 class Products extends Model
 {
 
-	public function getList($offset = 0, $limit = 3)
+	public function getList($offset = 0, $limit = 3, $filters = array())
 	{
 		$array = array();
+		$where = array(
+			'1=1'
+			);
+
+		if (!empty($filters['category'])) {
+			$where[] = "id_category = :id_category";
+		}
 		//$sql = "SELECT * FROM products";
 		/* Utilizando subqueries */
 		$sql = "SELECT * ,
 				(select brands.name from brands where brands.id = products.id_brand) as brand_name,
 				(select categories.name from categories where categories.id  = products.id_category) as category_name
-				FROM products LIMIT $offset, $limit";
+				FROM products 
+				WHERE ".implode(' AND ', $where)." 
+				LIMIT $offset, $limit";
 
-		$sql = $this->db->query($sql);
+		$sql = $this->db->prepare($sql);
+
+		if (!empty($filters['category'])) {
+			$sql->bindValue(":id_category", $filters['category']);
+		}
+
+		$sql->execute();
 
 		if ($sql->rowCount() > 0 ) {
 
@@ -50,10 +65,26 @@ class Products extends Model
 
 	}
 
-	public function getTotal()
+	public function getTotal($filters = array())
 	{
-		$sql = "SELECT COUNT(*) as c FROM products";
-		$sql = $this->db->query($sql);
+		$where = array(
+			'1=1'
+			);
+
+		if (!empty($filters['category'])) {
+			$where[] = "id_category = :id_category";
+		}
+
+		$sql = "SELECT COUNT(*) as c FROM products
+		WHERE ".implode(' AND ', $where);
+
+		$sql = $this->db->prepare($sql);
+
+		if (!empty($filters['category'])) {
+			$sql->bindValue(":id_category", $filters['category']);
+		}
+		
+		$sql->execute();
 		$sql = $sql->fetch();
 
 		return $sql['c'];
