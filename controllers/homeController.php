@@ -16,6 +16,7 @@ class homeController extends Controller
 
         $products = new Products();
         $categories = new Categories();
+        $f = new Filters();
 
         $currentPage = 1;
         $offset = 0;
@@ -33,6 +34,8 @@ class homeController extends Controller
         $dados['currentPage'] = $currentPage;
 
         $dados['categories'] = $categories->getList();
+
+        $dados['filters'] = $f->getFilters();
 
         $dados['maxslider'] = 1297;
 
