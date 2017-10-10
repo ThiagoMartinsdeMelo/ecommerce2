@@ -2,13 +2,93 @@
 
 class Products extends Model
 {
+	public function getSaleCount($filters = array())
+	{
+		$where = $this->buildWhere($filters);
 
-	public function getListOfBrands()
+		$where[] = 'sale = "1"';
+		
+		$sql = "SELECT COUNT(*)  as c
+				FROM products
+				WHERE ".implode(' AND ', $where);
+		
+		$sql = $this->db->prepare($sql);
+
+		$this->bindWhere($filters, $sql);
+
+		$sql->execute();
+
+		if ($sql->rowCount() > 0) {
+			$sql = $sql->fetch();
+			return $sql['c'];
+		} else {
+			return '0';
+		}
+	}
+
+	public function getMaxPrice($filters = array())
+	{
+		$where = $this->buildWhere($filters);
+		
+		$sql = "SELECT price 
+				FROM products
+				WHERE ".implode(' AND ', $where)." 
+		 		ORDER BY price DESC LIMIT 1";
+		
+		$sql = $this->db->prepare($sql);
+
+		$this->bindWhere($filters, $sql);
+
+		$sql->execute();
+
+		if ($sql->rowCount() > 0) {
+			$sql = $sql->fetch();
+			return $sql['price'];
+		} else {
+			return '0';
+		}
+
+	}
+
+	public function getListOfStars($filters = array()){
+		$array = array();
+		
+		$where = $this->buildWhere($filters);
+
+		$sql = "SELECT rating, COUNT(id) as c 
+				FROM products
+				WHERE ".implode(' AND ', $where)." 
+		 		GROUP BY rating";
+		
+		$sql = $this->db->prepare($sql);
+
+		$this->bindWhere($filters, $sql);
+
+		$sql->execute();
+
+		if ($sql->rowCount() > 0) {
+			$array = $sql->fetchAll();
+		}
+
+		return $array;
+	}
+
+	public function getListOfBrands($filters = array())
 	{
 		$array = array();
+		
+		$where = $this->buildWhere($filters);
 
-		$sql = "SELECT id_brand, COUNT(id) as c FROM products GROUP BY id_brand";
-		$sql = $this->db->query($sql);
+		$sql = "SELECT id_brand, COUNT(id) as c 
+				FROM products
+				WHERE ".implode(' AND ', $where)." 
+		 		GROUP BY id_brand";
+		
+		$sql = $this->db->prepare($sql);
+
+		$this->bindWhere($filters, $sql);
+
+		$sql->execute();	
 
 		if ($sql->rowCount() > 0) {
 			$array = $sql->fetchAll();
@@ -20,13 +100,9 @@ class Products extends Model
 	public function getList($offset = 0, $limit = 3, $filters = array())
 	{
 		$array = array();
-		$where = array(
-			'1=1'
-			);
 
-		if (!empty($filters['category'])) {
-			$where[] = "id_category = :id_category";
-		}
+		$where = $this->buildWhere($filters);
+
 		//$sql = "SELECT * FROM products";
 		/* Utilizando subqueries */
 		$sql = "SELECT * ,
@@ -37,10 +113,8 @@ class Products extends Model
 				LIMIT $offset, $limit";
 
 		$sql = $this->db->prepare($sql);
-
-		if (!empty($filters['category'])) {
-			$sql->bindValue(":id_category", $filters['category']);
-		}
+		
+		$this->bindWhere($filters, $sql);
 
 		$sql->execute();
 
@@ -81,6 +155,23 @@ class Products extends Model
 
 	public function getTotal($filters = array())
 	{
+		$where = $this->buildWhere($filters);
+
+		$sql = "SELECT COUNT(*) as c FROM products
+		WHERE ".implode(' AND ', $where);
+
+		$sql = $this->db->prepare($sql);
+
+		$this->bindWhere($filters, $sql);
+		
+		$sql->execute();
+		$sql = $sql->fetch();
+
+		return $sql['c'];
+	}
+
+	private function buildWhere($filters)
+	{
 		$where = array(
 			'1=1'
 			);
@@ -89,19 +180,14 @@ class Products extends Model
 			$where[] = "id_category = :id_category";
 		}
 
-		$sql = "SELECT COUNT(*) as c FROM products
-		WHERE ".implode(' AND ', $where);
+		return $where;
+	}
 
-		$sql = $this->db->prepare($sql);
-
+	private function bindWhere($filters, &$sql)
+	{
 		if (!empty($filters['category'])) {
 			$sql->bindValue(":id_category", $filters['category']);
-		}
-		
-		$sql->execute();
-		$sql = $sql->fetch();
-
-		return $sql['c'];
+		}	
 	}
 
 }
