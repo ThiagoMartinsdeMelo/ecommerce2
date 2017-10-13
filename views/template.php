@@ -219,7 +219,27 @@
 				  					<?php $this->lang->get('OPTIONS'); ?>
 				  				</div>
 				  				<div class="filtercontent">
-				  					...
+				  					<?php 
+				  						foreach ($viewData['filters']['options'] as $option): ?>
+				  						<strong><?= $option['name'] ?></strong></br>
+				  						<?php
+				  							foreach ($option['options'] as $op): ?>
+					  							<div class="filteritem">
+					  								<input type="checkbox" name="filter[options][]" value="<?= $op['id']; ?>" id="filter_options<?= $op['id']; ?>" />
+					  								<label for="filter_options<?= $op['id']; ?>">
+					  									<?= $op['value']; ?>
+					  								</label>
+					  								<span style="float:right;">
+					  									(<?= $op['count']; ?>)
+					  								</span>
+					  							</div>				  								
+				  						<?php
+				  							endforeach; 
+				  						?>
+				  						</br>
+				  					<?php
+				  						endforeach;
+				  					?>
 				  				</div>
 				  			</div>				  			
 				  		</div>

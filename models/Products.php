@@ -2,6 +2,79 @@
 
 class Products extends Model
 {
+
+	public function getAvailableOptions($filters = array())
+	{
+		$groups = array();
+		$ids = array();
+
+		$where = $this->buildWhere($filters); 
+
+		$sql = "SELECT
+			id, options
+			FROM products
+			WHERE ".implode(' AND ', $where);
+
+		$sql = $this->db->prepare($sql);
+
+		$this->bindWhere($filters, $sql);
+		$sql->execute();
+
+		if ($sql->rowCount() > 0) {
+			foreach ($sql->fetchAll() as $product) {
+				$ops = explode(",", $product['options']);
+				$ids[] = $product['id'];
+				foreach ($ops as $op) {
+					if (!in_array($op, $groups)) {
+						$groups[] = $op;
+					}
+				}
+			
+			}
+		}
+
+		$options = $this->getAvailableValuesFromOptions($groups, $ids);
+
+		return $options;
+
+	}
+
+	public function getAvailableValuesFromOptions($groups, $ids)
+	{
+		$array = array();
+		$options = new Options();
+
+		foreach ($groups as $op) {
+			$array[$op] = array(
+					'name' => $options->getName($op),
+					'options' => array()
+				);
+		}
+
+		$sql = "SELECT
+			p_value,
+			id_option,
+			COUNT(id_option) as c
+			FROM products_options
+			WHERE
+			id_option IN ('".implode("','", $groups)."') AND
+			id_product IN ('".implode("','", $groups)."')
+			GROUP BY p_value ORDER BY id_option";
+
+		$sql = $this->db->query($sql);
+
+		if ($sql->rowCount() > 0) {
+			foreach ($sql->fetchAll() as $ops) {
+				$array[$ops['id_option']]['options'][] = array(
+					'id' => $ops['id_option'],
+					'value' => $ops['p_value'],
+					'count' => $ops['c']);
+			}
+		}
+
+		return $array;
+	}
+
 	public function getSaleCount($filters = array())
 	{
 		$where = $this->buildWhere($filters);

@@ -1,6 +1,6 @@
 <?php
 
-class Brands extends model
+class Brands extends Model
 {
 	public function getList()
 	{

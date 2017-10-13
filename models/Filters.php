@@ -1,6 +1,6 @@
 <?php
 
-class Filters extends model
+class Filters extends Model
 {
 	public function getFilters($filters)
 	{
@@ -20,7 +20,9 @@ class Filters extends model
 						'5' => 0
 					),
 				'sale' => 0,
-				'options' => array()
+				'options' => array(
+
+					)
 			);
 
 		$array['brands'] = $brands->getList();
@@ -61,6 +63,9 @@ class Filters extends model
 
 		// Criando filtro das promoções
 		$array['sale'] = $products->getSaleCount($filters);
+
+		// Criando filtro das opções
+		$array['options'] = $products->getAvailableOptions($filters);
 
 		return $array;
 
